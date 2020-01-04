@@ -1,0 +1,65 @@
+<html> 
+ <head>
+    <title></title> 
+</head>
+ <body>
+    <p align="center"> 
+      <canvas id="mycanvas"></canvas> 
+    </p>
+ </body> 
+ <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script>
+ <script>
+var sketchProc = function(processingInstance) {
+with (processingInstance) {
+
+noStroke();
+fill(227, 75, 227);
+var Arrow = function() {
+    this.dir = 0;
+};
+
+Arrow.prototype.right = function(){
+    this.dir = 0;
+};
+Arrow.prototype.down = function(){
+    this.dir = 1;
+};
+Arrow.prototype.left = function(){
+    this.dir = 2;
+};
+Arrow.prototype.up = function(){
+    this.dir = 3;
+};
+
+Arrow.prototype.draw = function() {
+    if(this.dir === 0){//right
+        rect(165,154,58,20);
+        triangle(250,166,208,186,208,144);
+    }
+    if(this.dir === 1){//down
+        rect(165,131,22,47);
+        triangle(179,227,149,174,200,176);
+    }
+    if(this.dir === 2){//left
+        rect(165,154,58,20);
+        triangle(125,162,183,186,183,144);
+    }
+    if(this.dir === 3){//up
+        rect(165,131,22,47);
+        triangle(173,87,151,141,200,141);
+    }
+};
+
+
+var arrow = new Arrow();
+arrow.left();
+arrow.draw();
+
+}
+};
+
+var canvas = document.getElementById("mycanvas"); 
+var processingInstance = new Processing(canvas, sketchProc); 
+ </script>
+
+</html>
