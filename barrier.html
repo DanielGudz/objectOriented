@@ -1,0 +1,94 @@
+<html> 
+ <head>
+    <title></title> 
+</head>
+ <body>
+    <p align="center"> 
+      <canvas id="mycanvas"></canvas> 
+    </p>
+ </body> 
+ <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script>
+ <script>
+var sketchProc = function(processingInstance) {
+with (processingInstance) {
+
+frameRate(30);
+noStroke();
+fill(227, 75, 227);
+
+
+
+var Barrier = function() {
+    this.x = 366;
+    this.y = 0;
+    this.vdir = 0;
+};
+
+Barrier.prototype.draw = function() {
+    rect(this.x,this.y-312,3,450);
+    rect(this.x,this.y+250,3,450);
+};
+
+Barrier.prototype.step = function() {
+    this.x = this.x-1;
+};
+
+
+Barrier.prototype.upstep = function(){
+    this.y = this.y-5;
+};
+Barrier.prototype.downstep = function(){
+    this.y = this.y+5;
+};
+
+Barrier.prototype.vstep = function(){
+    if(this.y < -140){
+       this.vdir = 0;
+    }
+    else if(this.y > 150){
+       this.vdir = 1;
+    }
+    if(this.vdir === 0){this.downstep();}
+    else if(this.vdir === 1){this.upstep();}
+};
+
+
+var barrier = new Barrier(50, 1);
+
+var barriers = [barrier];
+var frameCounter = 0;
+
+draw = function() {
+    frameCounter++;
+    background(255, 255, 255);
+    if(frameCounter%15 === 0){
+        var barrier = new Barrier(50, 1);
+        barriers.push(barrier);
+        
+    }
+    for(var j = 0; j < barriers.length; j++){
+        barriers[j].draw();
+        barriers[j].step();
+        barriers[j].vstep();
+        
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var canvas = document.getElementById("mycanvas"); 
+var processingInstance = new Processing(canvas, sketchProc); 
+ </script>
+
+</html>
