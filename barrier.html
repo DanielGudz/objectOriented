@@ -14,19 +14,20 @@ with (processingInstance) {
 
 frameRate(30);
 noStroke();
-fill(227, 75, 227);
+fill(13, 122, 48);
 
 
 
 var Barrier = function() {
     this.x = 366;
     this.y = 0;
+    this.width = 25;
     this.vdir = 0;
 };
 
 Barrier.prototype.draw = function() {
-    rect(this.x,this.y-312,3,450);
-    rect(this.x,this.y+250,3,450);
+    rect(this.x,this.y-312,this.width,450);
+    rect(this.x,this.y+250,this.width,450);
 };
 
 Barrier.prototype.step = function() {
@@ -60,8 +61,8 @@ var frameCounter = 0;
 
 draw = function() {
     frameCounter++;
-    background(255, 255, 255);
-    if(frameCounter%15 === 0){
+    background(143, 212, 255);
+    if(frameCounter%180 === 0){
         var barrier = new Barrier(50, 1);
         barriers.push(barrier);
         
@@ -71,6 +72,9 @@ draw = function() {
         barriers[j].step();
         barriers[j].vstep();
         
+    }
+    if (barriers.length === 10) {
+        barriers.splice(0,1);
     }
 };
 
