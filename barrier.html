@@ -25,11 +25,17 @@ var Bird = function() {
     this.draw = function() {
         fill(255, 218, 8);
         ellipse(this.x,this.y,this.width,this.width);
+        fill(255, 136, 0);
+        rect(this.x+6, this.y-2, 15, 5);
+        fill(255, 255, 255);
+        ellipse(this.x,this.y-5,5,5);
     };
     
     
     this.up = function(){
-        this.y = this.y - 15;
+        if(this.y >= this.width){
+            this.y = this.y - 15;
+        }
     };
     this.down = function(){
         this.y = this.y + 2;
@@ -38,7 +44,7 @@ var Bird = function() {
 
 
 
-
+var bird = new Bird();
 
 
 var Barrier = function() {
@@ -46,27 +52,40 @@ var Barrier = function() {
     this.y = 0;
     this.width = 25;
     this.vdir = 0;
+    
+    
+    this.isTouching = function(bird){
+        if(bird.x >= this.x && bird.x <= this.x+25 && bird.y >= this.y+250 && bird.y <= this.y+450){
+            println('ded');
+        }
+        if(bird.x >= this.x && bird.x <= this.x+25 && bird.y >= this.y-312 && bird.y <= (this.y-312)+450){
+            println('dead');
+        }
 };
 
-Barrier.prototype.draw = function() {
+this.draw = function() {
     fill(13, 122, 48);
     rect(this.x,this.y-312,this.width,450);
     rect(this.x,this.y+250,this.width,450);
 };
 
-Barrier.prototype.step = function() {
+
+this.step = function() {
     this.x = this.x-1;
 };
 
-
-Barrier.prototype.upstep = function(){
+this.upstep = function(){
     this.y = this.y-3;
 };
-Barrier.prototype.downstep = function(){
+
+this.upstep = function(){
+    this.y = this.y-3;
+};
+this.downstep = function(){
     this.y = this.y+2;
 };
 
-Barrier.prototype.vstep = function(){
+this.vstep = function(){
     if(this.y < -140){
        this.vdir = 0;
     }
@@ -76,10 +95,15 @@ Barrier.prototype.vstep = function(){
     if(this.vdir === 0){this.downstep();}
     else if(this.vdir === 1){this.upstep();}
 };
+};
+
+
+
+
 
 
 var barrier = new Barrier(50, 1);
-var bird = new Bird();
+
 
 var barriers = [barrier];
 var frameCounter = 0;
@@ -109,6 +133,7 @@ draw = function() {
         barriers[j].draw();
         barriers[j].step();
         barriers[j].vstep();
+        barriers[j].isTouching(bird);
         
     }
     if (barriers.length === 10) {
