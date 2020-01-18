@@ -11,7 +11,6 @@
  <script>
 var sketchProc = function(processingInstance) {
 with (processingInstance) {
-
 frameRate(30);
 noStroke();
 var GAMEMODE_STARTMENU = 0;
@@ -108,15 +107,51 @@ var proccessInputStartMenuMode = function(){};
 var proccessInputGameOverMode = function(){};
 
 var Game = function(){
-    this.mode = GAMEMODE_PLAY;
+    this.score = 0;
+    this.mode = GAMEMODE_STARTMENU;
     this.bird = new Bird();
     this.barriers = [];
     this.frameCounter = 0;
-    this.showStartMenu = function(){};
-    this.showGameOverMenu = function(){};
+    this.showStartMenu = function(){
+        background(143, 212, 255);
+        fill(255, 166, 0);
+        rect(150,180,100,50);
+        fill(255, 255, 255);
+        textSize(30);
+        var font = createFont("monospace");
+        textFont(font);
+        text('play',173,215);
+        if(mouseX > 150 && mouseX < 250 && mouseY > 180 && mouseY < 230 && mouseIsPressed){return GAMEMODE_PLAY;}
+        return GAMEMODE_STARTMENU;
+    };
+    this.showGameOverMenu = function(){
+        background(143, 212, 255);
+        fill(255, 166, 0);
+        rect(150,180,100,50);
+        fill(189, 83, 83);
+        rect(129,115,145,43);
+        fill(255, 255, 255);
+        textSize(21);
+        var font = createFont("monospace");
+        textFont(font);
+        text('your score was ' + this.score, 130,150);
+        text('GAME OVER!',137,131);
+        text('play again',157,214);
+        if(mouseX > 150 && mouseX < 250 && mouseY > 180 && mouseY < 230 && mouseIsPressed){return GAMEMODE_PLAY;}
+        return GAMEMODE_GAMEOVER;
+        
+    };
+    this.initBoard = function(){
+        this.frameCounter = 0;
+        this.barriers = [];
+        this.score = 0;
+    };
+    
     this.play = function(){
         background(143, 212, 255);
+        text(this.score,20,20);
         if(this.frameCounter%220 === 0){
+            if(this.frameCounter>1){this.score = this.score + 1;}
             var barrier = new Barrier(50, 1);
             this.barriers.push(barrier);
                 
@@ -126,7 +161,7 @@ var Game = function(){
             this.barriers[j].step();
             this.barriers[j].vstep();
             if(this.barriers[j].isTouching(this.bird)){
-                return -1;
+                return GAMEMODE_GAMEOVER;
             }
             
             
@@ -139,32 +174,31 @@ var Game = function(){
         this.bird.draw();
         this.bird.down();
         this.frameCounter++;
-        return 0;
+        return GAMEMODE_PLAY;
     };
     this.setMode = function(mode){
         this.mode = mode;
         if(this.mode === GAMEMODE_PLAY){
+            this.initBoard();
             keyPressed = proccessInputGameMode;
-        }
-        else if(this.mode === GAMEMODE_STARTMENU){
-            keyPressed = proccessInputStartMenuMode;
-        }
-        else if(this.mode === GAMEMODE_GAMEOVER){
-            keyPressed = proccessInputGameOverMode;
         }
     };
     
     this.run = function(){
         if(this.mode === GAMEMODE_PLAY){
-            if(this.play() === -1){
+            if(this.play() === GAMEMODE_GAMEOVER){
                 this.setMode(GAMEMODE_GAMEOVER);
             }
         }
         else if(this.mode === GAMEMODE_STARTMENU){
-            this.showStartMenu();
+            if(this.showStartMenu() === GAMEMODE_PLAY){
+                this.setMode(GAMEMODE_PLAY);
+            }
         }
         else if(this.mode === GAMEMODE_GAMEOVER){
-            this.showGameOverMenu();
+            if(this.showGameOverMenu() === GAMEMODE_PLAY){
+                this.setMode(GAMEMODE_PLAY);
+            }
         }
     };
 };
@@ -183,8 +217,6 @@ var proccessInputGameMode = function() {
     }
 };
 
-var proccessInputStartMenuMode = function(){};
-var proccessInputGameOverMode = function(){};
 
 keyPressed = proccessInputGameMode;
 
