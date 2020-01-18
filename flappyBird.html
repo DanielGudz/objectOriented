@@ -1,0 +1,213 @@
+<html> 
+ <head>
+    <title></title> 
+</head>
+ <body>
+    <p align="center"> 
+      <canvas id="mycanvas"></canvas> 
+    </p>
+ </body> 
+ <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script>
+ <script>
+var sketchProc = function(processingInstance) {
+with (processingInstance) {
+
+frameRate(30);
+noStroke();
+var GAMEMODE_STARTMENU = 0;
+var GAMEMODE_PLAY = 1;
+var GAMEMODE_GAMEOVER = 2;
+
+
+
+var Bird = function() {
+    this.x = 200;
+    this.y = 200;
+    this.width = 25;
+    this.vdir = 0;
+    
+    this.draw = function() {
+        fill(255, 218, 8);
+        ellipse(this.x,this.y,this.width,this.width);
+        fill(255, 136, 0);
+        rect(this.x+6, this.y-2, 15, 5);
+        fill(255, 255, 255);
+        ellipse(this.x,this.y-5,5,5);
+    };
+    
+    
+    this.up = function(){
+        if(this.y >= this.width){
+            this.y = this.y - 15;
+        }
+    };
+    this.down = function(){
+        this.y = this.y + 2;
+    };
+};
+
+
+
+var bird = new Bird();
+
+
+var Barrier = function() {
+    this.x = 366;
+    this.y = 0;
+    this.width = 25;
+    this.vdir = 0;
+    
+    
+    this.isTouching = function(bird){
+        if(bird.x >= this.x && bird.x <= this.x+25 && bird.y >= this.y+250 && bird.y <= this.y+450){
+            return 1;
+        }
+        if(bird.x >= this.x && bird.x <= this.x+25 && bird.y >= this.y-312 && bird.y <= (this.y-312)+450){
+            return 1;
+        }
+        return 0;
+    };
+
+    this.draw = function() {
+        fill(13, 122, 48);
+        rect(this.x,this.y-312,this.width,450);
+        rect(this.x,this.y+250,this.width,450);
+    };
+
+
+    this.step = function() {
+        this.x = this.x-1;
+    };
+    
+    this.upstep = function(){
+        this.y = this.y-3;
+    };
+    
+    this.upstep = function(){
+        this.y = this.y-3;
+    };
+    this.downstep = function(){
+        this.y = this.y+2;
+    };
+    
+    this.vstep = function(){
+        if(this.y < -140){
+           this.vdir = 0;
+        }
+        else if(this.y > 150){
+           this.vdir = 1;
+        }
+        if(this.vdir === 0){this.downstep();}
+        else if(this.vdir === 1){this.upstep();}
+    };
+};
+
+
+var proccessInputGameMode = function(){};
+var proccessInputStartMenuMode = function(){};
+var proccessInputGameOverMode = function(){};
+
+var Game = function(){
+    this.mode = GAMEMODE_PLAY;
+    this.bird = new Bird();
+    this.barriers = [];
+    this.frameCounter = 0;
+    this.showStartMenu = function(){};
+    this.showGameOverMenu = function(){};
+    this.play = function(){
+        background(143, 212, 255);
+        if(this.frameCounter%220 === 0){
+            var barrier = new Barrier(50, 1);
+            this.barriers.push(barrier);
+                
+        }
+        for(var j = 0; j < this.barriers.length; j++){
+            this.barriers[j].draw();
+            this.barriers[j].step();
+            this.barriers[j].vstep();
+            if(this.barriers[j].isTouching(this.bird)){
+                return -1;
+            }
+            
+            
+        }
+        
+        if (this.barriers.length === 10) {
+            this.barriers.splice(0,1);
+        }
+        
+        this.bird.draw();
+        this.bird.down();
+        this.frameCounter++;
+        return 0;
+    };
+    this.setMode = function(mode){
+        this.mode = mode;
+        if(this.mode === GAMEMODE_PLAY){
+            keyPressed = proccessInputGameMode;
+        }
+        else if(this.mode === GAMEMODE_STARTMENU){
+            keyPressed = proccessInputStartMenuMode;
+        }
+        else if(this.mode === GAMEMODE_GAMEOVER){
+            keyPressed = proccessInputGameOverMode;
+        }
+    };
+    
+    this.run = function(){
+        if(this.mode === GAMEMODE_PLAY){
+            if(this.play() === -1){
+                this.setMode(GAMEMODE_GAMEOVER);
+            }
+        }
+        else if(this.mode === GAMEMODE_STARTMENU){
+            this.showStartMenu();
+        }
+        else if(this.mode === GAMEMODE_GAMEOVER){
+            this.showGameOverMenu();
+        }
+    };
+};
+
+
+
+
+var game = new Game();
+
+var proccessInputGameMode = function() {
+    if(keyCode === 38){
+        game.bird.up();
+    }
+    else if(keyCode === 40){
+        game.bird.down();
+    }
+};
+
+var proccessInputStartMenuMode = function(){};
+var proccessInputGameOverMode = function(){};
+
+keyPressed = proccessInputGameMode;
+
+
+
+draw = function() {
+    game.run();
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+var canvas = document.getElementById("mycanvas"); 
+var processingInstance = new Processing(canvas, sketchProc); 
+ </script>
+
+</html>
