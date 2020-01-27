@@ -26,12 +26,7 @@ var Bird = function() {
     this.vdir = 0;
     
     this.draw = function() {
-        fill(255, 218, 8);
-        ellipse(this.x,this.y,this.width,this.width);
-        fill(255, 136, 0);
-        rect(this.x+6, this.y-2, 15, 5);
-        fill(255, 255, 255);
-        ellipse(this.x,this.y-5,5,5);
+        image(getImage("avatars/mr-pink-green"),this.x,this.y,30,30);
     };
     
     
@@ -46,13 +41,9 @@ var Bird = function() {
 };
 
 
-
-var bird = new Bird();
-
-
-var Barrier = function() {
+var Barrier = function(shift) {
     this.x = 366;
-    this.y = 0;
+    this.y = shift;
     this.width = 25;
     this.vdir = 0;
     
@@ -89,6 +80,7 @@ var Barrier = function() {
         this.y = this.y+2;
     };
     
+    
     this.vstep = function(){
         if(this.y < -140){
            this.vdir = 0;
@@ -103,8 +95,6 @@ var Barrier = function() {
 
 
 var proccessInputGameMode = function(){};
-var proccessInputStartMenuMode = function(){};
-var proccessInputGameOverMode = function(){};
 
 var Game = function(){
     this.score = 0;
@@ -121,10 +111,17 @@ var Game = function(){
         var font = createFont("monospace");
         textFont(font);
         text('play',173,215);
-        if(mouseX > 150 && mouseX < 250 && mouseY > 180 && mouseY < 230 && mouseIsPressed){return GAMEMODE_PLAY;}
+        if(mouseX > 135 && mouseX < 275 && mouseY > 165 && mouseY < 245 && mouseIsPressed){return GAMEMODE_PLAY;}
         return GAMEMODE_STARTMENU;
     };
-    this.showGameOverMenu = function(){
+    
+    this.createBarrier = function() {
+        var shift = floor(random(-200,200));
+        var barrier = new Barrier(shift);
+        return barrier;
+    };
+    
+    this.showGameOverMenu = function() {
         background(143, 212, 255);
         fill(255, 166, 0);
         rect(150,180,100,50);
@@ -137,7 +134,7 @@ var Game = function(){
         text('your score was ' + this.score, 130,150);
         text('GAME OVER!',137,131);
         text('play again',157,214);
-        if(mouseX > 150 && mouseX < 250 && mouseY > 180 && mouseY < 230 && mouseIsPressed){return GAMEMODE_PLAY;}
+        if(mouseX > 135 && mouseX < 275 && mouseY > 164 && mouseY < 245 && mouseIsPressed){return GAMEMODE_PLAY;}
         return GAMEMODE_GAMEOVER;
         
     };
@@ -145,26 +142,25 @@ var Game = function(){
         this.frameCounter = 0;
         this.barriers = [];
         this.score = 0;
+        this.bird.y = 200;
     };
-    
     this.play = function(){
+        var barrierFrequency = floor(random(150,220));
         background(143, 212, 255);
         text(this.score,20,20);
-        if(this.frameCounter%220 === 0){
+        if(this.frameCounter%barrierFrequency === 0){
             if(this.frameCounter>1){this.score = this.score + 1;}
-            var barrier = new Barrier(50, 1);
+            var barrier = this.createBarrier();
             this.barriers.push(barrier);
-                
+            this.frameCounter = 0;    
         }
         for(var j = 0; j < this.barriers.length; j++){
             this.barriers[j].draw();
             this.barriers[j].step();
             this.barriers[j].vstep();
-            if(this.barriers[j].isTouching(this.bird)){
-                return GAMEMODE_GAMEOVER;
+            if(this.barriers[j].isTouching(this.bird) || this.bird.y > 380){
+            return GAMEMODE_GAMEOVER;
             }
-            
-            
         }
         
         if (this.barriers.length === 10) {
@@ -201,15 +197,15 @@ var Game = function(){
             }
         }
     };
-};
 
+};
 
 
 
 var game = new Game();
 
 var proccessInputGameMode = function() {
-    if(keyCode === 38){
+    if(keyCode === 38 || mouseIsPressed){
         game.bird.up();
     }
     else if(keyCode === 40){
